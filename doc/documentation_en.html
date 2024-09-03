@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation</title>
+  <link rel="stylesheet" href="https://stackedit.io/style.css" />
+</head>
+
+<body class="stackedit">
+<div class="stackedit__html">
+    <h1 id="descrizione-dellapplicazione-e-suo-utilizzo">Application Description and Usage</h1>
+    <p>Tom and Jerry is a Disney cartoon we have loved since childhood, and their relationship is both antagonistic and friendly, with love and rivalry intertwined.<br>
+        In this game, the player takes on the role of Tom the cat, who needs to find all the mice on the field while avoiding being chased by the owner.<br>
+        If the owner catches Tom and Tom hasn't caught all the mice, he will be punished, and the game will end.</p>
+    <p>
+        The objective of the game is to catch all the mice within a limited area while avoiding the owner's chase. But be careful! If you step out of the map, you'll be eliminated!
+    </p>
+    <h1 id="spiegazione-delle-scelte-effettuate-e-funzionalità-di-webgl-utilizzate">Explanation of Choices Made and WebGL Features Used</h1>
+    <p>Various techniques were used to create the scene.</p>
+    <h2>3D Objects</h2>
+    <p>A skybox was implemented using textures and perspective view to create the feeling of an infinite world.</p>
+    <p>Then, a plane with a grass texture was created to represent an open environment, making the setting more “alive.”</p>
+    <p>The size of the plane matches the size of the map. In fact, leaving the plane corresponds to entering the "Game Over" screen, and players can restart the game using the "Retry" button.</p>
+    <p>The scene consists of multiple meshes imported from Wavefront OBJ format files.</p>
+    <p>The meshes for Tom the cat and Jerry the mouse are quite complex (sourced from <a href="https://sketchfab.com/">sketchfab.com</a>).</p>
+    <p>To import the meshes into the scene, the <i>loadObj</i> function from the <i>utils</i> file was used.</p>
+    <h2>Textures</h2>
+    <p>Textures were applied to every object in the scene.</p>
+    <p>The texture implementation started from example code provided during the course.</p>
+    <p>Textures are created using WebGL functions “gl.createTexture()” and “gl.texImage2D()”, which apply the “mipmap” technique to images when possible. If not possible, default parameters are set to handle them.</p>
+    <p>Finally, Tom's owner was created by applying my photo as a texture to a sphere object.</p>
+    <img src="boss.png">
+    <h2>Lighting and Shadows</h2>
+    <p>I attempted to simulate natural light as much as possible by placing a light source above the scene. The light is directional, utilizing depth textures to calculate which objects are in shadow (and on which side).</p>
+    <p>The user can modify the light source's position along its axes.</p>
+    <p>I set a bias to limit pixelated shadow effects known as “shadow acne.”</p>
+    <p>Users can also choose not to render shadows to reduce the workload when running the game on less powerful computers.</p>
+    <p>One issue with lighting the scene using this technique is that the shadows appear somewhat pixelated (despite the low bias).<br>
+        This is because the objects have a low polygon count, making them appear less smooth when shadows are enabled.</p>
+    <p>To improve the visual effect, increasing the polygon count is one solution, or alternatively, implementing an efficient shadow algorithm to refine the shadow shapes.</p>
+    <h2>Movement and Collisions</h2>
+    <p>The movement of the cow in the scene is based on the cg-car2.js file observed during the course.</p>
+    <p>The physics used for movement is a simplified version of the car animation functions, without the need to manage wheels.</p>
+    <p>Movement within the map has some collisions.</p>
+    <p>By using the position of the controlled character, it is possible to determine if a collision with the enemy chasing us has occurred.</p>
+    <p>The player character's position is also used to create the owner's tracking algorithm, where the owner updates their direction based on Tom's position along the x and z axes, modifying the owner's position in each frame.</p>
+    <p>Two types of collisions have been implemented:</p>
+    <ul>
+        <li>Collisions with the owner</li>
+        <li>Collisions with Jerry</li>
+    </ul>
+    <p>When the owner catches the player, the game enters a game-over state, showing the appropriate screen, and allowing the player to restart the game.</p>
+    <img src="youdie.png">
+    <p>Collisions with Jerry cause them to disappear. Once all the Jerry mice are collected, a specific control determines the player's victory. Similarly, a view will appear on the screen informing the player of their success and allowing them to restart.</p>
+    <img src="youwin.png">
+    <p>The barrels in the scene rotate around the y-axis and x-axis, using functions from the library “m4.js”:<br>
+        “m4.yRotate(m, angleInRadians, dst)”<br>
+        “m4.xRotate(m, angleInRadians, dst)”</p>
+    <h2>Interaction with the Interface</h2>
+    <p>There are two types of interactions:</p>
+    <ul>
+        <li>In-game interaction</li>
+        <li>Menu interaction</li>
+    </ul>
+    <p>In-game interaction can be achieved in the following ways:</p>
+    <ul>
+        <li>Via keyboard</li>
+        <li>Via mouse</li>
+        <li>Via touch screen (on mobile devices)</li>
+    </ul>
+    <h3>Desktop Version</h3>
+    <img src="load.png">
+    <p>When running the program on a computer, the W, A, S, D keys are used to move the cow (a convention typically used in games with mouse and keyboard input).</p>
+    <p>The camera can be controlled with the arrow keys and the mouse. Additionally, the mouse wheel can be used to zoom in or out the camera's distance from the character.</p>
+    <p>The interface includes a panel on the right with various buttons and sliders. These buttons allow the camera to be set to three different modes:<br>
+        - Rear View<br>
+        - Front View<br>
+        - Isometric</p>
+
+    <img src="Isomatrica.png">
+    <p>The sliders provide the ability to move the light source along the x, z, and y axes (as previously mentioned).<br>
+        This feature's effect is more evident when shadows are enabled. Of course, there is an option to choose whether to display shadows or not.</p>
+    <h3>Mobile Version</h3>
+    <img src="load_iPhone.png">
+    <p>To allow users to use the application on smartphones, images representing the "WASD" keys and the "arrowUp, arrowLeft, arrowDown, arrowRight" key layout (sourced from Google images) were inserted into the scene.</p>
+    <p>These images are placed on the left and right sides of the canvas, respectively, to simulate controllers, with the right thumb used to move the character and the left thumb to control the camera.</p>
+    <h1 id="particolarità-e-sviluppi-futuri">Special Features and Future Developments</h1>
+    <p>The special feature of this software is the chase mechanism it proposes. In fact, the game is well-balanced with the enemy's speed, often leading to situations where enemies block the player's path, resulting in a game over.</p>
+    <p>Each time the game starts, the positions of Jerry mice and the enemy's spawn are randomized.</p>
+    <p>To improve the software in the future, the following features could be implemented:</p>
+    <ul>
+        <li>More complex terrain maps</li>
+        <li>More Jerry mice as targets, with random irregular movement.</li>
+        <li>Replace the sphere representing the owner with a more interesting obj.</li>
+    </ul>
+</div>
+</body>
+
+</html>
