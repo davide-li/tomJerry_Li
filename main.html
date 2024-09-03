@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="myStyle.css">
+  </link>
+  <title>TomJerry</title>
+</head>
+
+<body>
+  <div class="container">
+    <canvas width="1200" height="590" id="text"></canvas>
+    <canvas width="1200" height="590" id="myCanvas"></canvas>
+  </div>
+
+  <div id="uiContainer">
+    <h2>Light Position</h2>
+    <div id="LightX"></div>
+    <div id="LightY"></div>
+    <div id="LightZ"></div>
+
+    <div id="shadowOptions">
+      <div>
+        <h2>Shadows</h2>
+        <input type="radio" id="shadowOn" name="shadow" value="on" onclick="texture_enable=true" checked>
+        <label for="shadowOn">On</label>
+      </div>
+      <div>
+        <input type="radio" id="shadowOff" name="shadow" value="off" onclick="texture_enable=false">
+        <label for="shadowOff">Off</label>
+      </div>
+
+      <div id="cameraOptions">
+        <h2>Camera Options</h2>
+        </div>
+        <input type="button" id="buttonBack" value="Back"
+               onclick="cambiaCamera=false;cameraLiberabis = false;cameraIso=false; cameraLibera=false; camera_posteriore=true">
+        <input type="button" id="buttonForward" value="Forword"
+               onclick="cambiaCamera=true;cameraLiberabis = false;cameraIso=false;cameraLibera=false;camera_posteriore=true">
+        <input type="button" id="buttonIso" value="Isometric"
+               onclick="cameraIso=true;cameraLiberabis = false;camera_posteriore=true">
+    </div>
+
+    <div>
+      <h2>Information</h2>
+      <p>Created by Li for the Computer Graphics course</p>
+      <div id="documentationButton">
+        <button><a href="doc/documentation_en.html">documentation_en</a></button>
+        <button><a href="doc/documentation_cn.html">documentation_cn</a></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="instruction">
+    <h2 id="header">How to Play</h2>
+    <p>Use W, A, S, D to move.</p>
+    <p>Change the view with the right panel.</p>
+    <p>Control the view with the mouse.</p>
+    <p>Zoom in or out with the mouse wheel.</p>
+    <p>Click and drag the scene to adjust the camera angle.</p>
+  </div>
+
+</body>
+
+<script src="initCanva.js"></script>
+
+<script type="text/javascript" src="resources/libraries/m4.js"></script>
+<script type="text/javascript" src="resources/libraries/glm_utils.js"></script>
+<script type="text/javascript" src="resources/libraries/webgl-lessons-ui.js"></script>
+<script type="text/javascript" src="resources/libraries/dat.gui.js"></script>
+<script type="text/javascript" src="resources/libraries/webgl-utils.js"></script>
+
+<script src="cordinateGen.js"></script>
+<script src="shaders.js"></script>
+<script src="tomutils.js"></script>
+<script src="geometries.js"></script>
+<script src="movement.js"></script>
+<script src="eventsHandlers.js"></script>
+<script src="drawer.js"></script>
+<script src="main.js"></script>
+
+
+<script>
+
+
+</script>
+
+</html>
