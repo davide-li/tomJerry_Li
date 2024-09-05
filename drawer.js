@@ -1,70 +1,59 @@
-/**
- * 这个代码的作用是将游戏的内容展示在画布上。
- * 遇到的问题有：
- * 1.更改了图片和按钮的位置，导致功能失效。
- *
- * @type {boolean}
- */
-
 // Variabili: 变量的定义与初始化
 
-var texture_enable = true; // 用于启用或禁用纹理的布尔变量
+let texture_enable = true; // 用于启用或禁用纹理的布尔变量
 
-// 用于表示桶的状态，0表示未收集，1表示已收集
-var barile1 = 0;
-var barile2 = 0;
-var barile3 = 0;
+// 用于表示Jerry的状态，0表示未收集，1表示已收集
+let jerry1 = 0;
+let jerry2 = 0;
+let jerry3 = 0;
 
 // 表示游戏状态的布尔变量，morte为死亡状态，vittoria为胜利状态
-var morte = false;
-var vittoria = false;
+let morte = false;
+let vittoria = false;
 
-var numBarili = 0; // 收集的桶数量
-var barile = false; // 目前未使用的变量
+let numJerrys = 0; // 收集的Jerry数量
 
 // 图像对象初始化，用于加载游戏相关的图片资源
-var gameOver = new Image();
+let gameOver = new Image();
 gameOver.src = "resources/images/gameover.png";
 gameOver.addEventListener('load', function() {});
 
-var campagna = new Image();
+let campagna = new Image();
 campagna.src = "resources/images/youwin.png";
 campagna.addEventListener('load', function() {});
 
-var wasd_keys = new Image();
+let wasd_keys = new Image();
 wasd_keys.src = "resources/images/wasd.png";
 wasd_keys.addEventListener('load', function() {});
 
-var freccie = new Image();
-freccie.src = "resources/images/freccie.png";
-freccie.addEventListener('load', function() {});
+let arrows = new Image();
+arrows.src = "resources/images/arrows.png";
+arrows.addEventListener('load', function() {});
 
-var retry = new Image();
+let retry = new Image();
 retry.src = "resources/images/start.png";
 retry.addEventListener('load', function() {});
 
-var restart = new Image();
+let restart = new Image();
 restart.src = "resources/images/replay.png";
 restart.addEventListener('load', function() {});
-
-// -----------------------------------------------------------
 
 // Set di funzioni per disegnare gli oggetti 3D nella scena
 // 用于绘制3D场景中的对象的函数集
 
-// 绘制牛的函数
-function drawCow(ProgramInfo){
-    let u_model4 = m4.scale(m4.translation(posX, posY, posZ), 0.1, 0.1, 0.1); // 设置牛的模型矩阵，包含平移和缩放变换
+// 绘制Tom的函数
+function drawTom(ProgramInfo){
+    let u_model4 = m4.scale(m4.translation(posX, posY, posZ), 0.1, 0.1, 0.1); // 设置Tom的模型矩阵，包含平移和缩放变换
     u_model4 = m4.yRotate(u_model4, degToRad(facing)); // 根据朝向旋转
     u_model4 = m4.yRotate(u_model4, degToRad(90)); // 进一步旋转
     u_model4 = m4.xRotate(u_model4, degToRad(-90)); // 旋转模型
     u_model4 = m4.zRotate(u_model4, degToRad(90)); // 旋转模型
-    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_cow); // 设置缓冲区和属性
+    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_tom); // 设置缓冲区和属性
     webglUtils.setUniforms(ProgramInfo, {
         u_world: u_model4,
-        u_texture: texture_cow, // 使用牛的纹理
+        u_texture: texture_tom, // 使用Tom的纹理
     });
-    webglUtils.drawBufferInfo(gl, bufferInfo_cow); // 绘制牛
+    webglUtils.drawBufferInfo(gl, bufferInfo_tom); // 绘制Tom
 }
 
 // 绘制敌人的函数
@@ -100,44 +89,43 @@ function drawEnemy(ProgramInfo, time, bufferInf, x_enemy, z_enemy){
     }
 }
 
-// 绘制第一个桶的函数
+// 绘制第一个Jerry的函数
 function drawBarile(ProgramInfo, time){
-    let u_modelfolder = m4.scale(m4.translation(bar1xz[0], 1, bar1xz[1]), 10, 10, 10); // 设置桶的位置和缩放
-    u_modelfolder = m4.yRotate(u_modelfolder, time); // 旋转桶
-    u_modelfolder = m4.yRotate(u_modelfolder, degToRad(180)); // 旋转桶
-    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_folder); // 设置缓冲区和属性
+    let u_modeljerry = m4.scale(m4.translation(jerry1xz[0], 1, jerry1xz[1]), 10, 10, 10); // 设置Jerry的位置和缩放
+    u_modeljerry = m4.yRotate(u_modeljerry, time); // 旋转Jerry
+    u_modeljerry = m4.yRotate(u_modeljerry, degToRad(180)); // 旋转Jerry
+    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_jerry); // 设置缓冲区和属性
     webglUtils.setUniforms(ProgramInfo, {
         u_colorMult: [0.5, 0.5, 1, 1], // 颜色乘法因子
-        u_world: u_modelfolder,
-        u_texture: texture_folder, // 使用桶的纹理
+        u_world: u_modeljerry,
+        u_texture: texture_jerry, // 使用Jerry的纹理
     });
-    webglUtils.drawBufferInfo(gl, bufferInfo_folder); // 绘制桶
+    webglUtils.drawBufferInfo(gl, bufferInfo_jerry); // 绘制Jerry
 }
 
-// 绘制第二个桶的函数
-function drawBarile2(ProgramInfo, time){
-    let u_modelfolder = m4.scale(m4.translation(bar2xz[0], 1, bar2xz[1]), 10, 10, 10); // 设置桶的位置和缩放
-    u_modelfolder = m4.yRotate(u_modelfolder, time); // 旋转桶
-    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_folder); // 设置缓冲区和属性
+// 绘制第二个Jerry的函数
+function drawjerry2(ProgramInfo, time){
+    let u_modeljerry = m4.scale(m4.translation(jerry2xz[0], 1, jerry2xz[1]), 10, 10, 10); // 设置Jerry的位置和缩放
+    u_modeljerry = m4.yRotate(u_modeljerry, time); // 旋转Jerry
+    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_jerry); // 设置缓冲区和属性
     webglUtils.setUniforms(ProgramInfo, {
         u_colorMult: [0.5, 0.5, 1, 1], // 颜色乘法因子
-        u_world: u_modelfolder,
-        u_texture: texture_folder, // 使用桶的纹理
+        u_world: u_modeljerry,
+        u_texture: texture_jerry, // 使用Jerry的纹理
     });
-    webglUtils.drawBufferInfo(gl, bufferInfo_folder); // 绘制桶
+    webglUtils.drawBufferInfo(gl, bufferInfo_jerry); // 绘制Jerry
 }
 
-// 绘制第三个桶的函数
-function drawBarile3(ProgramInfo, time){
-    let u_modelfolder = m4.scale(m4.translation(bar3xz[0], 1, bar3xz[1]), 10, 10, 10); // 设置桶的位置和缩放
-    u_modelfolder = m4.yRotate(u_modelfolder, time); // 旋转桶
-    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_folder); // 设置缓冲区和属性
+// 绘制第三个Jerry的函数
+function drawjerry3(ProgramInfo, time){
+    let u_modeljerry = m4.scale(m4.translation(jerry3xz[0], 1, jerry3xz[1]), 10, 10, 10); // 设置Jerry的位置和缩放
+    u_modeljerry = m4.yRotate(u_modeljerry, time); // 旋转Jerry
+    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_jerry); // 设置缓冲区和属性
     webglUtils.setUniforms(ProgramInfo, {
-        //u_colorMult: [0.5, 0.5, 1, 1], // 该行被注释，意味着可能未使用颜色乘法
-        u_world: u_modelfolder,
-        u_texture: texture_folder, // 使用桶的纹理
+        u_world: u_modeljerry,
+        u_texture: texture_jerry, // 使用Jerry的纹理
     });
-    webglUtils.drawBufferInfo(gl, bufferInfo_folder); // 绘制桶
+    webglUtils.drawBufferInfo(gl, bufferInfo_jerry); // 绘制Jerry
 }
 
 // 绘制地面的函数
@@ -205,28 +193,26 @@ function drawScene(projectionMatrix, camera, textureMatrix, lightWorldMatrix, pr
         });
     }
 
-    drawCow(programInfo); // 绘制牛
+    drawTom(programInfo); // 绘制Tom
     drawEnemy(programInfo, time, bufferInfo_sphere, x_enemu, z_enemu); // 绘制敌人
 
-    // 根据桶的状态绘制桶
-    if (barile1 == 0) {
+    // 根据Jerry的状态绘制Jerry
+    if (jerry1 == 0) {
         drawBarile(programInfo, time);
     }
-    if (barile2 == 0) {
-        drawBarile2(programInfo, time);
+    if (jerry2 == 0) {
+        drawjerry2(programInfo, time);
     }
-    if (barile3 == 0) {
-        drawBarile3(programInfo, time);
+    if (jerry3 == 0) {
+        drawjerry3(programInfo, time);
     }
 
-    // 检查玩家是否收集了所有桶
-    if (numBarili == 3) {
+    // 检查玩家是否收集了所有Jerry
+    if (numJerrys == 3) {
         vittoria = 1; // 设置胜利状态
     }
     drawFloor(programInfo); // 绘制地面
 }
-
-// -----------------------------------------------------------
 
 // Funzione per il render di testo, menu e bottoni
 // 用于渲染文本、菜单和按钮的函数
@@ -236,12 +222,12 @@ function drawMiscElements() {
     if( (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ) {
         // 如果是移动设备，显示 WASD 和方向键的提示图像
         ctx.drawImage(wasd_keys, 80, 330); // 在画布上的位置 (80, 330) 绘制 WASD 控制提示图像
-        ctx.drawImage(freccie, 540, 330); // 在画布上的位置 (540, 330) 绘制方向键控制提示图像
+        ctx.drawImage(arrows, 540, 330); // 在画布上的位置 (540, 330) 绘制方向键控制提示图像
     } else {
         // 如果不是移动设备，目前不执行任何操作
     }
 
-    // 在画布上绘制白色文本：提示玩家收集被偷走的牛奶桶
+    // 在画布上绘制白色文本：提示玩家抓到Jerry
     ctx.font = '18pt Arial'; // 设置字体为 18pt 的 Arial
     ctx.fillStyle = 'white'; // 设置文本颜色为白色
     ctx.fillText("You need to catch all Jerry", 20, 30); // 在位置 (20, 30) 绘制文本
@@ -251,21 +237,21 @@ function drawMiscElements() {
     ctx.fillStyle = 'black'; // 设置文本颜色为黑色
     ctx.fillText("You need to catch all Jerry", 22, 32); // 在位置 (22, 32) 绘制文本
 
-    // 在画布上绘制白色文本：提示玩家逃离坏蛋农场主
+    // 在画布上绘制白色文本：提示玩家逃离BOSS
     ctx.font = '18pt Calibri'; // 设置字体为 18pt 的 Calibri
     ctx.fillStyle = 'white'; // 设置文本颜色为白色
     ctx.fillText("Escape from BOSS behind you!", 842, 32); // 在位置 (842, 32) 绘制文本
 
-    // 根据已收集的桶的数量，显示相应的提示文本
+    // 根据已收集的Jerry的数量，显示相应的提示文本
     ctx.font = '14pt Arial'; // 设置字体为 14pt 的 Arial
     ctx.fillStyle = 'white'; // 设置文本颜色为白色
-    numBarili = barile1 + barile2 + barile3; // 计算已收集的桶的数量
-    if ((numBarili) == 0) {
-        ctx.fillText("There are 3 Jerry", 842, 52); // 如果没有收集到桶，显示“缺少 3 个桶”
-    } else if ((numBarili) == 1) {
-        ctx.fillText("There are 2 Jerry", 842, 52); // 如果收集到 1 个桶，显示“加油，还剩 2 个”
-    } else if ((numBarili) == 2) {
-        ctx.fillText("There is only 1 Jerry", 842, 52); // 如果收集到 2 个桶，显示“只剩 1 个了”
+    numJerrys = jerry1 + jerry2 + jerry3; // 计算已收集的Jerry的数量
+    if ((numJerrys) == 0) {
+        ctx.fillText("There are 3 Jerry", 842, 52); // 如果没有收集到Jerry，显示“缺少 3 个Jerry”
+    } else if ((numJerrys) == 1) {
+        ctx.fillText("There are 2 Jerry", 842, 52); // 如果收集到 1 个Jerry，显示“加油，还剩 2 个”
+    } else if ((numJerrys) == 2) {
+        ctx.fillText("There is only 1 Jerry", 842, 52); // 如果收集到 2 个Jerry，显示“只剩 1 个了”
     }
 
     // 重复上面的步骤，用红色绘制相同的文本，以产生强调效果
@@ -273,16 +259,16 @@ function drawMiscElements() {
     ctx.fillStyle = 'red'; // 设置文本颜色为红色
     ctx.fillText("Escape from BOSS behind you!", 840, 30); // 在位置 (840, 30) 绘制文本
 
-    // 根据已收集的桶的数量，显示相应的红色提示文本
+    // 根据已收集的Jerry的数量，显示相应的红色提示文本
     ctx.font = '14pt Arial'; // 设置字体为 14pt 的 Arial
     ctx.fillStyle = 'red'; // 设置文本颜色为红色
-    numBarili = barile1 + barile2 + barile3; // 重新计算已收集的桶的数量
-    if ((numBarili) == 0) {
-        ctx.fillText("There are 3 Jerry", 840, 50); // 如果没有收集到桶，显示“缺少 3 个桶”
-    } else if ((numBarili) == 1) {
-        ctx.fillText("There are 2 Jerry", 840, 50); // 如果收集到 1 个桶，显示“加油，还剩 2 个”
-    } else if ((numBarili) == 2) {
-        ctx.fillText("There is only 1 Jerry", 840, 50); // 如果收集到 2 个桶，显示“只剩 1 个了”
+    numJerrys = jerry1 + jerry2 + jerry3; // 重新计算已收集的Jerry的数量
+    if ((numJerrys) == 0) {
+        ctx.fillText("There are 3 Jerry", 840, 50); // 如果没有收集到Jerry，显示“缺少 3 个Jerry”
+    } else if ((numJerrys) == 1) {
+        ctx.fillText("There are 2 Jerry", 840, 50); // 如果收集到 1 个Jerry，显示“加油，还剩 2 个”
+    } else if ((numJerrys) == 2) {
+        ctx.fillText("There is only 1 Jerry", 840, 50); // 如果收集到 2 个Jerry，显示“只剩 1 个了”
     }
 
     // 检查游戏状态，如果玩家已经死亡，显示“游戏结束”图像和重试按钮

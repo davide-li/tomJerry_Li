@@ -41,15 +41,15 @@
         This is because the objects have a low polygon count, making them appear less smooth when shadows are enabled.</p>
     <p>To improve the visual effect, increasing the polygon count is one solution, or alternatively, implementing an efficient shadow algorithm to refine the shadow shapes.</p>
     <h2>Movement and Collisions</h2>
-    <p>The movement of the cow in the scene is based on the cg-car2.js file observed during the course.</p>
+    <p>The movement of the tom in the scene is based on the cg-car2.js file observed during the course.</p>
     <p>The physics used for movement is a simplified version of the car animation functions, without the need to manage wheels.</p>
     <p>Movement within the map has some collisions.</p>
     <p>By using the position of the controlled character, it is possible to determine if a collision with the enemy chasing us has occurred.</p>
     <p>The player character's position is also used to create the owner's tracking algorithm, where the owner updates their direction based on Tom's position along the x and z axes, modifying the owner's position in each frame.</p>
     <p>Two types of collisions have been implemented:</p>
     <ul>
-        <li>Collisions with the owner</li>
-        <li>Collisions with Jerry</li>
+        <ul>Collisions with the owner</ul>
+        <ul>Collisions with Jerry</ul>
     </ul>
     <p>When the owner catches the player, the game enters a game-over state, showing the appropriate screen, and allowing the player to restart the game.</p>
     <img src="youdie.png">
@@ -61,18 +61,18 @@
     <h2>Interaction with the Interface</h2>
     <p>There are two types of interactions:</p>
     <ul>
-        <li>In-game interaction</li>
-        <li>Menu interaction</li>
+        <ul>In-game interaction</ul>
+        <ul>Menu interaction</ul>
     </ul>
     <p>In-game interaction can be achieved in the following ways:</p>
     <ul>
-        <li>Via keyboard</li>
-        <li>Via mouse</li>
-        <li>Via touch screen (on mobile devices)</li>
+        <ul>Via keyboard</ul>
+        <ul>Via mouse</ul>
+        <ul>Via touch screen (on mobile devices)</ul>
     </ul>
     <h3>Desktop Version</h3>
     <img src="load.png">
-    <p>When running the program on a computer, the W, A, S, D keys are used to move the cow (a convention typically used in games with mouse and keyboard input).</p>
+    <p>When running the program on a computer, the W, A, S, D keys are used to move the tom (a convention typically used in games with mouse and keyboard input).</p>
     <p>The camera can be controlled with the arrow keys and the mouse. Additionally, the mouse wheel can be used to zoom in or out the camera's distance from the character.</p>
     <p>The interface includes a panel on the right with various buttons and sliders. These buttons allow the camera to be set to three different modes:<br>
         - Rear View<br>
@@ -91,9 +91,9 @@
     <p>Each time the game starts, the positions of Jerry mice and the enemy's spawn are randomized.</p>
     <p>To improve the software in the future, the following features could be implemented:</p>
     <ul>
-        <li>More complex terrain maps</li>
-        <li>More Jerry mice as targets, with random irregular movement.</li>
-        <li>Replace the sphere representing the owner with a more interesting obj.</li>
+        <ul>More complex terrain maps</ul>
+        <ul>More Jerry mice as targets, with random irregular movement.</ul>
+        <ul>Replace the sphere representing the owner with a more interesting obj.</ul>
     </ul>
 </div>
 </body>

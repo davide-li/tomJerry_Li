@@ -1,10 +1,7 @@
-"use strict";
-
 // 摄像机和场景设置
 var camera_posteriore = true; // 是否使用后视摄像机
 var cambiaCamera = false; // 切换摄像机视角的标志
 var cameraIso = false; // 是否使用固定的等距摄像机
-var click_end = false; // 检测鼠标拖动结束的标志
 
 // 摄像机的目标位置和当前位置
 let cameraTarget = [0, 0, 0]; // 摄像机看向的目标位置
@@ -12,8 +9,6 @@ let cameraPosition = [0, 0, 0]; // 摄像机的当前位置
 let up = [0, 1, 0]; // 向上的方向向量，决定摄像机的上方向
 
 // 透视投影参数
-const zNear = 0.1; // 透视投影的近裁剪面
-const zFar = 200; // 透视投影的远裁剪面
 const fieldOfViewRadians = degToRad(60); // 摄像机的视野角度（以弧度表示）
 const aspect = gl.canvas.clientWidth / gl.canvas.clientHeight; // 视锥体的宽高比
 
@@ -41,13 +36,9 @@ var x_light = 10,
 
 var clock = 0; // 用于时间跟踪的变量
 
-var viewParamsChanged = false; // 用于检测视图参数是否改变
-
 // 用于存储矩阵的变量
 var lightWorldMatrix; // 光源的世界矩阵
 var lightProjectionMatrix; // 光源的投影矩阵
-var projectionMatrix; // 摄像机的投影矩阵
-var cameraMatrix; // 摄像机矩阵
 
 // 初始敌人位置
 var x_enemu = xz[0];
@@ -71,9 +62,6 @@ var timeNow = 0; // 当前时间
 
 const PHYS_SAMPLING_STEP = 20; // 物理采样步长
 
-// 创建WebGL程序信息对象，包含着色器和其他属性
-var meshProgramInfo = webglUtils.createProgramInfo(gl, [vertShader, fragShader]);
-
 // 用于天空盒、太阳、颜色的WebGL程序信息
 var skyboxProgramInfo = webglUtils.createProgramInfo(gl, [skyVertShader, skyFragShader]);
 var sunProgramInfo = webglUtils.createProgramInfo(gl, [sunVertShader, sunFragShader]);
@@ -81,7 +69,7 @@ var colorProgramInfo = webglUtils.createProgramInfo(gl, [colorVertShader, colorF
 
 // 设置几何图形和初始状态
 setGeo(gl); // 设置场景中的几何物体
-cowInit(); // 初始化游戏中的其他物体，如敌人
+tomInit(); // 初始化游戏中的其他物体，如敌人
 createTextureLight(); // 初始化用于阴影映射的纹理光源
 
 // 初始化光源位置的滑块控制
@@ -92,7 +80,7 @@ webglLessonsUI.setupSlider("#LightZ", {value: 250, slide: updateLightz, min: 100
 // 更新函数，用于处理物理更新和渲染
 function update(time) {
     if (nstep * PHYS_SAMPLING_STEP <= timeNow) { // 如果物理采样步长不足，跳过此帧
-        cowMove(); // 更新敌人或物体的位置
+        tomMove(); // 更新敌人或物体的位置
         nstep++;
         doneSomething = true;
         window.requestAnimationFrame(update); // 请求下一帧的更新

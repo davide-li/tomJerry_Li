@@ -1,36 +1,22 @@
-/**代码功能概述
- 对象和纹理的初始化：使用多个函数来加载几何体和纹理。每个几何体都有对应的缓冲信息变量和纹理变量。
-
- 加载对象几何体：通过调用诸如loadObj之类的函数从文件中读取对象数据，并将这些数据分配给相应的缓冲信息变量。
-
- 加载纹理：通过调用loadTextureFromImg函数从图像文件加载纹理，并将这些纹理分配给相应的纹理变量。
-
- 地板的创建：loadFloor()函数创建一个简单的平面来表示地板，并指定其位置、法线和纹理坐标。
-
- 天空盒的创建：loadSkyBox()函数定义了一个天空盒，通过加载一个包含六个面的纹理（通常用于模拟天空的背景）。
-
- 这个代码片段显示了如何使用WebGL来加载和渲染不同的三维对象，使用不同的缓冲信息来存储几何体数据，并为这些对象应用纹理。
- **/
-
 // 用于存储不同对象的缓冲信息
 let bufferInfo_sphere;   // 球体对象的缓冲信息
 let bufferInfo_skybox;   // 天空盒对象的缓冲信息
 let bufferInfo_floor;    // 地板对象的缓冲信息
-let bufferInfo_cow;      // 牛模型对象的缓冲信息
-let bufferInfo_folder;   // 文件夹模型对象的缓冲信息
+let bufferInfo_tom;      // Tom模型对象的缓冲信息
+let bufferInfo_jerry;   // Jerry模型对象的缓冲信息
 
 // 用于存储不同对象的纹理
 let texture_sphere;      // 球体对象的纹理
 let texture_skybox;      // 天空盒对象的纹理
-let texture_cow;         // 牛模型对象的纹理
+let texture_tom;         // Tom模型对象的纹理
 let texture_floor;       // 地板对象的纹理
-let texture_folder;      // 文件夹模型对象的纹理
+let texture_jerry;      // Jerry模型对象的纹理
 
 // 初始化函数，用于加载所有几何体
-function setGeo(gl) {
+function setGeo() {
     loadSphere();   // 加载球体几何体
     loadMouse();    // 加载Jerry小老鼠
-    loadCat();      // 加载猫模型
+    loadTom();      // 加载猫模型
     loadFloor();    // 加载地板
     loadSkyBox();   // 加载天空盒
 }
@@ -100,7 +86,7 @@ function loadSphere() {
 }
 
 function loadMouse() {
-    loadObj("resources/obj/Jerry.obj");  // 加载文件夹的OBJ模型
+    loadObj("resources/obj/Jerry.obj");  // 加载Jerry的OBJ模型
 
     // 调整模型的缩放比例
     const scaleFactor = 0.05; // 缩小20倍
@@ -108,22 +94,22 @@ function loadMouse() {
         webglVertexData[0][i] *= scaleFactor;
     }
 
-    const folder_array = {
+    const jerry_array = {
         position: { numComponents: 3, data: webglVertexData[0], },  // 位置数据
         texcoord: { numComponents: 2, data: webglVertexData[1], },  // 纹理坐标数据
         normal: { numComponents: 3, data: webglVertexData[2], },    // 法线数据
     };
 
-    // 创建缓冲信息并将文件夹的几何体数据加载到缓冲区中
-    bufferInfo_folder = webglUtils.createBufferInfoFromArrays(gl, folder_array);
+    // 创建缓冲信息并将Jerry的几何体数据加载到缓冲区中
+    bufferInfo_jerry = webglUtils.createBufferInfoFromArrays(gl, jerry_array);
 
-    // 加载文件夹的纹理
-    texture_folder = loadTextureFromImg("resources/obj/jerry.png");
+    // 加载Jerry的纹理
+    texture_jerry = loadTextureFromImg("resources/obj/jerry.png");
 }
 
 // 加载猫模型的几何体和纹理
-function loadCat() {
-    loadObj("resources/obj/Cat.obj");  // 加载牛模型的OBJ文件
+function loadTom() {
+    loadObj("resources/obj/Cat.obj");  // 加载Tom模型的OBJ文件
 
     const cat_infos = {
         position: { numComponents: 3, data: webglVertexData[0], },  // 位置数据
@@ -131,9 +117,9 @@ function loadCat() {
         normal: { numComponents: 3, data: webglVertexData[2], },    // 法线数据
     };
 
-    // 创建缓冲信息并将牛模型的几何体数据加载到缓冲区中
-    bufferInfo_cow = webglUtils.createBufferInfoFromArrays(gl, cat_infos);
+    // 创建缓冲信息并将Tom模型的几何体数据加载到缓冲区中
+    bufferInfo_tom = webglUtils.createBufferInfoFromArrays(gl, cat_infos);
 
-    // 加载牛模型的纹理
-    texture_cow = loadTextureFromImg("resources/obj/cat.png");
+    // 加载Tom模型的纹理
+    texture_tom = loadTextureFromImg("resources/obj/cat.png");
 }

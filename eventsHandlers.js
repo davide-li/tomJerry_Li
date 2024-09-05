@@ -1,7 +1,3 @@
-/**
- * 这段代码主要用于处理不同设备的用户交互行为，包括键盘、鼠标、触摸等输入方式，来控制场景中的相机、物体的移动和游戏状态的重置。
- * 它根据用户的输入（按键、触摸或鼠标事件）来实时更新场景中的状态，例如相机的位置和角度，或者触发特定的游戏行为（例如重启游戏）。
- */
 // 为不同的用户交互事件添加事件监听器
 
 window.addEventListener("keydown", doKeyDown, true); // 当键盘按下时触发 doKeyDown 函数
@@ -50,7 +46,7 @@ function mouseDown(e) {
 }
 
 // 鼠标松开事件处理函数，关闭拖拽模式
-function mouseUp(e) {
+function mouseUp() {
   drag = false;
 }
 
@@ -200,7 +196,7 @@ function doTouchDown(e) {
 }
 
 // 处理移动设备上的触摸结束事件
-function doTouchUp(e) {
+function doTouchUp() {
   x = touch.pageX - canvas.offsetLeft; // 计算触摸点的 x 坐标
   y = touch.pageY - canvas.offsetTop;  // 计算触摸点的 y 坐标
 
@@ -221,8 +217,8 @@ function checkButtonClick(e) {
 
   // 检查点击是否在重新开始按钮区域
   if (x >= 490 && x <= 650 && y >= 178 && y <= 236 && (morte == true || vittoria == true)) {
-    cowInit(); // 重新初始化游戏
-    refreshBarels(); // 刷新桶对象
+    tomInit(); // 重新初始化游戏
+    refreshJerrys(); // 刷新Jerry对象
     x_enemu = genValue(); // 生成新的敌人 x 坐标
     z_enemu = genValue(); // 生成新的敌人 z 坐标
     morte = false; // 复位死亡状态
@@ -230,9 +226,9 @@ function checkButtonClick(e) {
     cambiaCamera = false; // 复位相机切换标志
     cameraLiberabis = false; // 复位自由相机模式
     cameraIso = false; // 复位等距相机模式
-    barile1 = false; // 复位桶1状态
-    barile2 = false; // 复位桶2状态
-    barile3 = false; // 复位桶3状态
+    jerry1 = false; // 复位Jerry1状态
+    jerry2 = false; // 复位Jerry2状态
+    jerry3 = false; // 复位Jerry3状态
 
     // 设置相机灯光滑块
     webglLessonsUI.setupSlider("#LightX", { value: 270, slide: updateLightx, min: 0, max: 450, step: 1 });
