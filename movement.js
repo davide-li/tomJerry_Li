@@ -69,7 +69,7 @@ function tomMove() {
     posY += vy;
     posZ += vz;
 
-    // 检测Tom是否接触到敌人
+    // 检测Tom是否接触到BOSS
     if (posX >= x_enemu - 6 && posX <= x_enemu + 6 && posZ >= z_enemu - 6 && posZ <= z_enemu + 6) {
         morte = 1; // 设置死亡状态
     }

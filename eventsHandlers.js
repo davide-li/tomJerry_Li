@@ -219,8 +219,8 @@ function checkButtonClick(e) {
   if (x >= 490 && x <= 650 && y >= 178 && y <= 236 && (morte == true || vittoria == true)) {
     tomInit(); // 重新初始化游戏
     refreshJerrys(); // 刷新Jerry对象
-    x_enemu = genValue(); // 生成新的敌人 x 坐标
-    z_enemu = genValue(); // 生成新的敌人 z 坐标
+    x_enemu = genValue(); // 生成新的BOSS x 坐标
+    z_enemu = genValue(); // 生成新的BOSS z 坐标
     morte = false; // 复位死亡状态
     vittoria = false; // 复位胜利状态
     cambiaCamera = false; // 复位相机切换标志

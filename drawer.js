@@ -1,19 +1,19 @@
-// Variabili: 变量的定义与初始化
+// Variables: 变量的定义与初始化
 
-let texture_enable = true; // 用于启用或禁用纹理的布尔变量
+let texture_enable = true; // Boolean variable to enable or disable texture
 
-// 用于表示Jerry的状态，0表示未收集，1表示已收集
+// Jerry's status, 0 means not collected, 1 means collected
 let jerry1 = 0;
 let jerry2 = 0;
 let jerry3 = 0;
 
-// 表示游戏状态的布尔变量，morte为死亡状态，vittoria为胜利状态
+// Boolean variables to represent game state: morte (death) and vittoria (victory)
 let morte = false;
 let vittoria = false;
 
-let numJerrys = 0; // 收集的Jerry数量
+let numJerrys = 0; // Number of collected Jerrys
 
-// 图像对象初始化，用于加载游戏相关的图片资源
+// Initialize image objects for loading game-related images
 let gameOver = new Image();
 gameOver.src = "resources/images/gameover.png";
 gameOver.addEventListener('load', function() {});
@@ -38,133 +38,131 @@ let restart = new Image();
 restart.src = "resources/images/replay.png";
 restart.addEventListener('load', function() {});
 
-// Set di funzioni per disegnare gli oggetti 3D nella scena
-// 用于绘制3D场景中的对象的函数集
-
-// 绘制Tom的函数
+// Functions to draw 3D objects in the scene
+// 绘制Tom的函数 Function to draw Tom
 function drawTom(ProgramInfo){
-    let u_model4 = m4.scale(m4.translation(posX, posY, posZ), 0.1, 0.1, 0.1); // 设置Tom的模型矩阵，包含平移和缩放变换
-    u_model4 = m4.yRotate(u_model4, degToRad(facing)); // 根据朝向旋转
-    u_model4 = m4.yRotate(u_model4, degToRad(90)); // 进一步旋转
-    u_model4 = m4.xRotate(u_model4, degToRad(-90)); // 旋转模型
-    u_model4 = m4.zRotate(u_model4, degToRad(90)); // 旋转模型
-    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_tom); // 设置缓冲区和属性
+    let u_model4 = m4.scale(m4.translation(posX, posY, posZ), 0.1, 0.1, 0.1); // Set Tom's model matrix with translation and scale
+    u_model4 = m4.yRotate(u_model4, degToRad(facing)); // Rotate based on the facing direction
+    u_model4 = m4.yRotate(u_model4, degToRad(90)); // Rotate further
+    u_model4 = m4.xRotate(u_model4, degToRad(-90)); // Rotate model
+    u_model4 = m4.zRotate(u_model4, degToRad(90)); // Rotate model
+    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_tom); // Set buffer and attributes
     webglUtils.setUniforms(ProgramInfo, {
         u_world: u_model4,
-        u_texture: texture_tom, // 使用Tom的纹理
+        u_texture: texture_tom, // Use Tom's texture
     });
-    webglUtils.drawBufferInfo(gl, bufferInfo_tom); // 绘制Tom
+    webglUtils.drawBufferInfo(gl, bufferInfo_tom); // Draw Tom
 }
 
-// 绘制敌人的函数
-function drawEnemy(ProgramInfo, time, bufferInf, x_enemy, z_enemy){
-    let u_model = m4.identity(); // 初始化模型矩阵
-    u_model = m4.scale(m4.translation(x_enemy, 5.5, z_enemy), 5, 5, 5); // 设置敌人位置和缩放
-    u_model = m4.yRotate(u_model, time); // 基于时间旋转敌人
-    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInf); // 设置缓冲区和属性
+// 绘制BOSS的函数 Function to draw the BOSS
+function drawBoss(ProgramInfo, time, bufferInf, x_enemy, z_enemy){
+    let u_model = m4.identity(); // Initialize model matrix
+    u_model = m4.scale(m4.translation(x_enemy, 5.5, z_enemy), 5, 5, 5); // Set enemy position and scale
+    u_model = m4.yRotate(u_model, time); // Rotate enemy based on time
+    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInf); // Set buffer and attributes
     webglUtils.setUniforms(ProgramInfo, {
-        u_colorMult: [0.5, 0.5, 1, 1], // 颜色乘法因子
+        u_colorMult: [0.5, 0.5, 1, 1], // Color multiplier
         u_world: u_model,
-        u_texture: texture_sphere, // 使用球体纹理
+        u_texture: texture_sphere, // Use sphere texture for the enemy
     });
-    webglUtils.drawBufferInfo(gl, bufferInf); // 绘制敌人
+    webglUtils.drawBufferInfo(gl, bufferInf); // Draw enemy
 
-    // 更新敌人的位置，使其移动到玩家的位置
+    // Update enemy position to move toward the player
     if(clock == 0){
         if(x_enemy > posX){
-            x_enemu--; // 如果敌人x坐标大于玩家，减小x坐标
+            x_enemu--; // Decrease x if enemy's x is greater than player's x
         } else {
-            x_enemu++; // 否则增加x坐标
+            x_enemu++; // Increase x otherwise
         }
         if(z_enemy > posZ){
-            z_enemu--; // 如果敌人z坐标大于玩家，减小z坐标
+            z_enemu--; // Decrease z if enemy's z is greater than player's z
         } else {
-            z_enemu++; // 否则增加z坐标
+            z_enemu++; // Increase z otherwise
         }
         clock++;
     } else if(clock == 15) {
-        clock = 0; // 计时器复位
+        clock = 0; // Reset clock
     } else {
         clock++;
     }
 }
 
-// 绘制第一个Jerry的函数
-function drawBarile(ProgramInfo, time){
-    let u_modeljerry = m4.scale(m4.translation(jerry1xz[0], 1, jerry1xz[1]), 10, 10, 10); // 设置Jerry的位置和缩放
-    u_modeljerry = m4.yRotate(u_modeljerry, time); // 旋转Jerry
-    u_modeljerry = m4.yRotate(u_modeljerry, degToRad(180)); // 旋转Jerry
-    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_jerry); // 设置缓冲区和属性
+// 绘制第一个Jerry的函数 Function to draw the first Jerry
+function drawJerry(ProgramInfo, time){
+    let u_modeljerry = m4.scale(m4.translation(jerry1xz[0], 1, jerry1xz[1]), 10, 10, 10); // Set Jerry's position and scale
+    u_modeljerry = m4.yRotate(u_modeljerry, time); // Rotate Jerry
+    u_modeljerry = m4.yRotate(u_modeljerry, degToRad(180)); // Rotate Jerry further
+    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_jerry); // Set buffer and attributes
     webglUtils.setUniforms(ProgramInfo, {
-        u_colorMult: [0.5, 0.5, 1, 1], // 颜色乘法因子
+        u_colorMult: [0.5, 0.5, 1, 1], // Color multiplier
         u_world: u_modeljerry,
-        u_texture: texture_jerry, // 使用Jerry的纹理
+        u_texture: texture_jerry, // Use Jerry's texture
     });
-    webglUtils.drawBufferInfo(gl, bufferInfo_jerry); // 绘制Jerry
+    webglUtils.drawBufferInfo(gl, bufferInfo_jerry); // Draw Jerry
 }
 
-// 绘制第二个Jerry的函数
+// 绘制第二个Jerry的函数 Function to draw the second Jerry
 function drawjerry2(ProgramInfo, time){
-    let u_modeljerry = m4.scale(m4.translation(jerry2xz[0], 1, jerry2xz[1]), 10, 10, 10); // 设置Jerry的位置和缩放
-    u_modeljerry = m4.yRotate(u_modeljerry, time); // 旋转Jerry
-    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_jerry); // 设置缓冲区和属性
+    let u_modeljerry = m4.scale(m4.translation(jerry2xz[0], 1, jerry2xz[1]), 10, 10, 10); // Set Jerry's position and scale
+    u_modeljerry = m4.yRotate(u_modeljerry, time); // Rotate Jerry
+    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_jerry); // Set buffer and attributes
     webglUtils.setUniforms(ProgramInfo, {
-        u_colorMult: [0.5, 0.5, 1, 1], // 颜色乘法因子
+        u_colorMult: [0.5, 0.5, 1, 1], // Color multiplier
         u_world: u_modeljerry,
-        u_texture: texture_jerry, // 使用Jerry的纹理
+        u_texture: texture_jerry, // Use Jerry's texture
     });
-    webglUtils.drawBufferInfo(gl, bufferInfo_jerry); // 绘制Jerry
+    webglUtils.drawBufferInfo(gl, bufferInfo_jerry); // Draw Jerry
 }
 
-// 绘制第三个Jerry的函数
+// 绘制第三个Jerry的函数 Function to draw the third Jerry
 function drawjerry3(ProgramInfo, time){
-    let u_modeljerry = m4.scale(m4.translation(jerry3xz[0], 1, jerry3xz[1]), 10, 10, 10); // 设置Jerry的位置和缩放
-    u_modeljerry = m4.yRotate(u_modeljerry, time); // 旋转Jerry
-    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_jerry); // 设置缓冲区和属性
+    let u_modeljerry = m4.scale(m4.translation(jerry3xz[0], 1, jerry3xz[1]), 10, 10, 10); // Set Jerry's position and scale
+    u_modeljerry = m4.yRotate(u_modeljerry, time); // Rotate Jerry
+    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_jerry); // Set buffer and attributes
     webglUtils.setUniforms(ProgramInfo, {
         u_world: u_modeljerry,
-        u_texture: texture_jerry, // 使用Jerry的纹理
+        u_texture: texture_jerry, // Use Jerry's texture
     });
-    webglUtils.drawBufferInfo(gl, bufferInfo_jerry); // 绘制Jerry
+    webglUtils.drawBufferInfo(gl, bufferInfo_jerry); // Draw Jerry
 }
 
-// 绘制地面的函数
+// 绘制地面的函数 Function to draw the ground
 function drawFloor(ProgramInfo){
-    let u_modelfloor = m4.identity(); // 使用单位矩阵，表示没有特殊的模型变换
-    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_floor); // 设置缓冲区和属性
+    let u_modelfloor = m4.identity(); // Use identity matrix (no special transformations)
+    webglUtils.setBuffersAndAttributes(gl, ProgramInfo, bufferInfo_floor); // Set buffer and attributes
     webglUtils.setUniforms(ProgramInfo, {
         u_world: u_modelfloor,
-        u_texture: texture_floor, // 使用地板的纹理
+        u_texture: texture_floor, // Use floor texture
     });
-    webglUtils.drawBufferInfo(gl, bufferInfo_floor); // 绘制地面
+    webglUtils.drawBufferInfo(gl, bufferInfo_floor); // Draw the floor
 }
 
-// 绘制天空盒的函数
+// 绘制天空盒的函数 Function to draw the sky
 function drawSkybox(gl, skyboxProgramInfo, view, projection) {
-    gl.depthFunc(gl.LEQUAL); // 设置深度函数，使得天空盒绘制在最远的背景
+    gl.depthFunc(gl.LEQUAL); // Set depth function to draw skybox at the farthest background
 
-    const viewMatrix = m4.copy(view); // 复制视图矩阵
+    const viewMatrix = m4.copy(view); // Copy view matrix
 
-    // 移除视图矩阵中的平移分量
+    // Remove the translation component of the view matrix
     viewMatrix[12] = 0;
     viewMatrix[13] = 0;
     viewMatrix[14] = 0;
 
-    let viewDirectionProjectionMatrix = m4.multiply(projection, viewMatrix); // 计算视图方向投影矩阵
-    let viewDirectionProjectionInverse = m4.inverse(viewDirectionProjectionMatrix); // 计算视图方向投影矩阵的逆矩阵
-    gl.useProgram(skyboxProgramInfo.program); // 使用天空盒着色程序
-    webglUtils.setBuffersAndAttributes(gl, skyboxProgramInfo, bufferInfo_skybox); // 设置缓冲区和属性
+    let viewDirectionProjectionMatrix = m4.multiply(projection, viewMatrix); // Calculate view direction projection matrix
+    let viewDirectionProjectionInverse = m4.inverse(viewDirectionProjectionMatrix); // Calculate inverse of view direction projection matrix
+    gl.useProgram(skyboxProgramInfo.program); // Use skybox shader program
+    webglUtils.setBuffersAndAttributes(gl, skyboxProgramInfo, bufferInfo_skybox); // Set buffer and attributes
     webglUtils.setUniforms(skyboxProgramInfo, {
         u_viewDirectionProjectionInverse: viewDirectionProjectionInverse,
-        u_skybox: texture_skybox, // 使用天空盒的纹理
+        u_skybox: texture_skybox, // Use skybox texture
     });
-    webglUtils.drawBufferInfo(gl, bufferInfo_skybox); // 绘制天空盒
+    webglUtils.drawBufferInfo(gl, bufferInfo_skybox); // Draw skybox
 }
-
-// 绘制整个场景的函数
+// Function to draw the entire scene
 function drawScene(projectionMatrix, camera, textureMatrix, lightWorldMatrix, programInfo, time) {
-    const viewMatrix = m4.inverse(camera); // 计算视图矩阵
-    gl.useProgram(programInfo.program); // 使用普通着色程序
+    const viewMatrix = m4.inverse(camera); // Calculate view matrix (camera perspective)
+    gl.useProgram(programInfo.program); // Use main shader program
+    // If texture is enabled, set the texture and lighting uniforms
     if (texture_enable == true) {
         webglUtils.setUniforms(programInfo, {
             u_view: viewMatrix,
@@ -172,15 +170,17 @@ function drawScene(projectionMatrix, camera, textureMatrix, lightWorldMatrix, pr
             u_bias: bias,
             u_textureMatrix: textureMatrix,
             u_projectedTexture: depthTexture,
-            u_reverseLightDirection: lightWorldMatrix.slice(8, 11),
-            u_lightDirection: m4.normalize([-1, 3, 5]),
-            u_lightIntensity: lightIntensity,
-            u_shadowIntensity: shadowIntensity,
+            u_reverseLightDirection: lightWorldMatrix.slice(8, 11), // Light direction for shadows
+            u_lightDirection: m4.normalize([-1, 3, 5]), // Normalize light direction
+            u_lightIntensity: lightIntensity, // Light intensity
+            u_shadowIntensity: shadowIntensity, // Shadow intensity
         });
     }
+
+    // If texture is disabled, scale the texture matrix to 0 to disable it
     if (texture_enable == false) {
         textureMatrix = m4.identity();
-        textureMatrix = m4.scale(textureMatrix, 0, 0, 0);
+        textureMatrix = m4.scale(textureMatrix, 0, 0, 0); // Scale texture to zero
         webglUtils.setUniforms(programInfo, {
             u_view: viewMatrix,
             u_projection: projectionMatrix,
@@ -193,96 +193,99 @@ function drawScene(projectionMatrix, camera, textureMatrix, lightWorldMatrix, pr
         });
     }
 
-    drawTom(programInfo); // 绘制Tom
-    drawEnemy(programInfo, time, bufferInfo_sphere, x_enemu, z_enemu); // 绘制敌人
+    // Draw Tom character
+    drawTom(programInfo);
 
-    // 根据Jerry的状态绘制Jerry
+    // Draw enemy character
+    drawBoss(programInfo, time, bufferInfo_sphere, x_enemu, z_enemu);
+
+    // Draw Jerry characters based on their collection status
     if (jerry1 == 0) {
-        drawBarile(programInfo, time);
+        drawJerry(programInfo, time); // Draw first Jerry if not collected
     }
     if (jerry2 == 0) {
-        drawjerry2(programInfo, time);
+        drawjerry2(programInfo, time); // Draw second Jerry if not collected
     }
     if (jerry3 == 0) {
-        drawjerry3(programInfo, time);
+        drawjerry3(programInfo, time); // Draw third Jerry if not collected
     }
 
-    // 检查玩家是否收集了所有Jerry
+    // Check if all Jerry characters are collected
     if (numJerrys == 3) {
-        vittoria = 1; // 设置胜利状态
+        vittoria = 1; // Set victory state if all Jerrys are collected
     }
-    drawFloor(programInfo); // 绘制地面
+
+    // Draw the floor
+    drawFloor(programInfo);
 }
 
-// Funzione per il render di testo, menu e bottoni
-// 用于渲染文本、菜单和按钮的函数
-
+// Function to render text, menus, and buttons
 function drawMiscElements() {
-    // 检查设备类型，如果是移动设备，显示对应的控制提示图像
+    // Check if the device is mobile, and display appropriate control hints
     if( (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ) {
-        // 如果是移动设备，显示 WASD 和方向键的提示图像
-        ctx.drawImage(wasd_keys, 80, 330); // 在画布上的位置 (80, 330) 绘制 WASD 控制提示图像
-        ctx.drawImage(arrows, 540, 330); // 在画布上的位置 (540, 330) 绘制方向键控制提示图像
+        // If mobile device, show WASD and arrow key control hints
+        ctx.drawImage(wasd_keys, 80, 330); // Draw WASD control hints at position (80, 330)
+        ctx.drawImage(arrows, 540, 330); // Draw arrow control hints at position (540, 330)
     } else {
-        // 如果不是移动设备，目前不执行任何操作
+        // No action for non-mobile devices currently
     }
 
-    // 在画布上绘制白色文本：提示玩家抓到Jerry
-    ctx.font = '18pt Arial'; // 设置字体为 18pt 的 Arial
-    ctx.fillStyle = 'white'; // 设置文本颜色为白色
-    ctx.fillText("You need to catch all Jerry", 20, 30); // 在位置 (20, 30) 绘制文本
+    // Draw white text: prompt the player to catch Jerry
+    ctx.font = '18pt Arial'; // Set font to 18pt Arial
+    ctx.fillStyle = 'white'; // Set text color to white
+    ctx.fillText("You need to catch all Jerry", 20, 30); // Draw text at position (20, 30)
 
-    // 绘制黑色文本：与上面白色文本稍有偏移，以产生阴影效果
-    ctx.font = '18pt Arial'; // 设置字体为 18pt 的 Arial
-    ctx.fillStyle = 'black'; // 设置文本颜色为黑色
-    ctx.fillText("You need to catch all Jerry", 22, 32); // 在位置 (22, 32) 绘制文本
+    // Draw black text slightly offset to create a shadow effect
+    ctx.font = '18pt Arial';
+    ctx.fillStyle = 'black'; // Set text color to black
+    ctx.fillText("You need to catch all Jerry", 22, 32); // Draw text at position (22, 32)
 
-    // 在画布上绘制白色文本：提示玩家逃离BOSS
-    ctx.font = '18pt Calibri'; // 设置字体为 18pt 的 Calibri
-    ctx.fillStyle = 'white'; // 设置文本颜色为白色
-    ctx.fillText("Escape from BOSS behind you!", 842, 32); // 在位置 (842, 32) 绘制文本
+    // Draw white text: prompt the player to escape from the boss
+    ctx.font = '18pt Calibri';
+    ctx.fillStyle = 'white';
+    ctx.fillText("Escape from BOSS behind you!", 842, 32); // Draw text at position (842, 32)
 
-    // 根据已收集的Jerry的数量，显示相应的提示文本
-    ctx.font = '14pt Arial'; // 设置字体为 14pt 的 Arial
-    ctx.fillStyle = 'white'; // 设置文本颜色为白色
-    numJerrys = jerry1 + jerry2 + jerry3; // 计算已收集的Jerry的数量
-    if ((numJerrys) == 0) {
-        ctx.fillText("There are 3 Jerry", 842, 52); // 如果没有收集到Jerry，显示“缺少 3 个Jerry”
-    } else if ((numJerrys) == 1) {
-        ctx.fillText("There are 2 Jerry", 842, 52); // 如果收集到 1 个Jerry，显示“加油，还剩 2 个”
-    } else if ((numJerrys) == 2) {
-        ctx.fillText("There is only 1 Jerry", 842, 52); // 如果收集到 2 个Jerry，显示“只剩 1 个了”
+    // Display the number of Jerrys remaining based on how many have been collected
+    ctx.font = '14pt Arial';
+    ctx.fillStyle = 'white';
+    numJerrys = jerry1 + jerry2 + jerry3; // Calculate number of collected Jerrys
+    if (numJerrys == 0) {
+        ctx.fillText("There are 3 Jerry", 842, 52); // If no Jerrys collected, display "There are 3 Jerry"
+    } else if (numJerrys == 1) {
+        ctx.fillText("There are 2 Jerry", 842, 52); // If 1 Jerry collected, display "There are 2 Jerry"
+    } else if (numJerrys == 2) {
+        ctx.fillText("There is only 1 Jerry", 842, 52); // If 2 Jerrys collected, display "There is only 1 Jerry"
     }
 
-    // 重复上面的步骤，用红色绘制相同的文本，以产生强调效果
-    ctx.font = '18pt Calibri'; // 设置字体为 18pt 的 Calibri
-    ctx.fillStyle = 'red'; // 设置文本颜色为红色
-    ctx.fillText("Escape from BOSS behind you!", 840, 30); // 在位置 (840, 30) 绘制文本
+    // Repeat the above steps, but draw the text in red for emphasis
+    ctx.font = '18pt Calibri';
+    ctx.fillStyle = 'red';
+    ctx.fillText("Escape from BOSS behind you!", 840, 30); // Draw red text at position (840, 30)
 
-    // 根据已收集的Jerry的数量，显示相应的红色提示文本
-    ctx.font = '14pt Arial'; // 设置字体为 14pt 的 Arial
-    ctx.fillStyle = 'red'; // 设置文本颜色为红色
-    numJerrys = jerry1 + jerry2 + jerry3; // 重新计算已收集的Jerry的数量
-    if ((numJerrys) == 0) {
-        ctx.fillText("There are 3 Jerry", 840, 50); // 如果没有收集到Jerry，显示“缺少 3 个Jerry”
-    } else if ((numJerrys) == 1) {
-        ctx.fillText("There are 2 Jerry", 840, 50); // 如果收集到 1 个Jerry，显示“加油，还剩 2 个”
-    } else if ((numJerrys) == 2) {
-        ctx.fillText("There is only 1 Jerry", 840, 50); // 如果收集到 2 个Jerry，显示“只剩 1 个了”
+    // Display the number of remaining Jerrys in red text
+    ctx.font = '14pt Arial';
+    ctx.fillStyle = 'red';
+    numJerrys = jerry1 + jerry2 + jerry3; // Recalculate collected Jerrys
+    if (numJerrys == 0) {
+        ctx.fillText("There are 3 Jerry", 840, 50); // Display "There are 3 Jerry" in red
+    } else if (numJerrys == 1) {
+        ctx.fillText("There are 2 Jerry", 840, 50); // Display "There are 2 Jerry" in red
+    } else if (numJerrys == 2) {
+        ctx.fillText("There is only 1 Jerry", 840, 50); // Display "There is only 1 Jerry" in red
     }
 
-    // 检查游戏状态，如果玩家已经死亡，显示“游戏结束”图像和重试按钮
+    // If the player has lost, show the game over image and retry button
     if (morte == 1) {
-        ctx.drawImage(gameOver, 0, 0, text.clientWidth, text.clientHeight); // 在画布上显示游戏结束图像，占满整个画布
-        ctx.drawImage(retry, 480, 175); // 在位置 (480, 175) 绘制重试按钮图像
+        ctx.drawImage(gameOver, 0, 0, text.clientWidth, text.clientHeight); // Display game over image full screen
+        ctx.drawImage(retry, 480, 175); // Draw retry button at position (480, 175)
     }
 
-    // 如果玩家胜利，显示胜利场景图像和重新开始按钮，并显示胜利信息
+    // If the player has won, show the victory image and restart button, with a victory message
     if (vittoria == 1) {
-        ctx.drawImage(campagna, 0, 0, text.clientWidth, text.clientHeight); // 在画布上显示胜利场景图像，占满整个画布
-        ctx.drawImage(restart, 480, 175); // 在位置 (480, 175) 绘制重新开始按钮图像
-        ctx.font = '40pt Playfair Display'; // 设置字体为 40pt 的 Arial
-        ctx.fillStyle = 'yellow'; // 设置文本颜色为白色
-        ctx.fillText("YOU WIN!", 450, 150); // 在位置 (290, 30) 绘制胜利文本
+        ctx.drawImage(campagna, 0, 0, text.clientWidth, text.clientHeight); // Display victory image full screen
+        ctx.drawImage(restart, 480, 175); // Draw restart button at position (480, 175)
+        ctx.font = '40pt Playfair Display';
+        ctx.fillStyle = 'yellow';
+        ctx.fillText("YOU WIN!", 450, 150); // Display "YOU WIN!" message at position (450, 150)
     }
 }

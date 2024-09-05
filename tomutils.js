@@ -1,22 +1,22 @@
-// 将度数转换为弧度
+// Convert degrees to radians
 function degToRad(d) {
 	return d * Math.PI / 180;
 }
 
-// 将弧度转换为度数
+// Convert radians to degrees
 function radToDeg(r) {
 	return r * 180 / Math.PI;
 }
 
-// 检查一个值是否为2的幂
+// Check if a value is a power of 2
 function isPowerOf2(value) {
 	return (value & (value - 1)) == 0;
 }
 
-// 使用单张图片加载所有立方体贴图的面（Skybox）
+// Load all faces of a cubemap texture from a single image (Skybox)
 function loadSkyboxTexture(jpg_resource) {
-	const texture = gl.createTexture(); // 创建一个纹理对象
-	gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture); // 绑定纹理类型为立方体贴图
+	const texture = gl.createTexture(); // Create a texture object
+	gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture); // Bind the texture as a cubemap
 
 	const faceInfos = [
 		{ target: gl.TEXTURE_CUBE_MAP_POSITIVE_X, url: jpg_resource, },
@@ -28,9 +28,9 @@ function loadSkyboxTexture(jpg_resource) {
 	];
 
 	const image = new Image();
-	image.src = faceInfos[0].url; // 设置图片源路径
+	image.src = faceInfos[0].url; // Set the image source
 	image.addEventListener('load', function () {
-		// 图片加载完成后，应用到立方体的各个面
+		// Once the image loads, apply it to each face of the cubemap
 		faceInfos.forEach((faceInfo) => {
 			const { target } = faceInfo;
 			const level = 0;
@@ -39,33 +39,32 @@ function loadSkyboxTexture(jpg_resource) {
 			const height = 1024;
 			const format = gl.RGBA;
 			const type = gl.UNSIGNED_BYTE;
-			gl.texImage2D(target, level, internalFormat, width, height, 0, format, type, null); // 创建一个空的立方体贴图
-			gl.texImage2D(target, level, internalFormat, format, type, image); // 用图片填充贴图面
+			gl.texImage2D(target, level, internalFormat, width, height, 0, format, type, null); // Create an empty cubemap texture
+			gl.texImage2D(target, level, internalFormat, format, type, image); // Fill the face with the image
 		});
-		gl.generateMipmap(gl.TEXTURE_CUBE_MAP); // 生成Mipmap
-		gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR); // 设置Mipmap过滤方式
+		gl.generateMipmap(gl.TEXTURE_CUBE_MAP); // Generate Mipmap
+		gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR); // Set filtering for mipmap
 	});
 
-	return texture; // 返回生成的立方体贴图纹理
+	return texture; // Return the generated cubemap texture
 }
 
-
-// 从图像加载2D纹理
+// Load 2D texture from an image
 function loadTextureFromImg(imageSrc) {
-	var texture = gl.createTexture(); // 创建一个2D纹理对象
+	var texture = gl.createTexture(); // Create a 2D texture object
 
 	var textureImage = new Image();
-	textureImage.src = imageSrc; // 设置图像源路径
+	textureImage.src = imageSrc; // Set the image source
 	textureImage.addEventListener('load', function () {
-		gl.bindTexture(gl.TEXTURE_2D, texture); // 绑定纹理对象
-		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureImage); // 将图像数据加载到纹理中
+		gl.bindTexture(gl.TEXTURE_2D, texture); // Bind the texture object
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureImage); // Load the image data into the texture
 
-		// 检查图像是否为2的幂次方尺寸
+		// Check if the image dimensions are powers of 2
 		if (isPowerOf2(textureImage.width) && isPowerOf2(textureImage.height)) {
-			gl.generateMipmap(gl.TEXTURE_2D); // 生成Mipmap
-			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST); // 设置Mipmap过滤
+			gl.generateMipmap(gl.TEXTURE_2D); // Generate Mipmap
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST); // Set mipmap filtering
 		} else {
-			// 设置纹理参数以防止图像尺寸不是2的幂次方
+			// Set texture parameters in case image dimensions are not powers of 2
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -73,14 +72,14 @@ function loadTextureFromImg(imageSrc) {
 		}
 	});
 
-	return texture; // 返回生成的2D纹理
+	return texture; // Return the generated 2D texture
 }
 
-// 创建深度纹理和帧缓冲区
+// Create depth texture and framebuffer for shadow mapping
 function createTextureLight() {
-	depthTexture = gl.createTexture(); // 创建深度纹理
+	depthTexture = gl.createTexture(); // Create depth texture
 	depthTextureSize = 1024;
-	gl.bindTexture(gl.TEXTURE_2D, depthTexture); // 绑定纹理对象
+	gl.bindTexture(gl.TEXTURE_2D, depthTexture); // Bind the texture object
 	gl.texImage2D(
 		gl.TEXTURE_2D,
 		0,
@@ -90,24 +89,24 @@ function createTextureLight() {
 		0,
 		gl.DEPTH_COMPONENT,
 		gl.UNSIGNED_INT,
-		null); // 创建空的深度纹理
+		null); // Create an empty depth texture
 
-	// 设置深度纹理的过滤参数
+	// Set filtering parameters for the depth texture
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-	depthFramebuffer = gl.createFramebuffer(); // 创建帧缓冲区对象
-	gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer); // 绑定帧缓冲区
+	depthFramebuffer = gl.createFramebuffer(); // Create framebuffer object
+	gl.bindFramebuffer(gl.FRAMEBUFFER, depthFramebuffer); // Bind the framebuffer
 	gl.framebufferTexture2D(
 		gl.FRAMEBUFFER,
 		gl.DEPTH_ATTACHMENT,
 		gl.TEXTURE_2D,
 		depthTexture,
-		0); // 将深度纹理附加到帧缓冲区
+		0); // Attach the depth texture to the framebuffer
 
-	// 创建未使用的颜色纹理并附加到帧缓冲区
+	// Create an unused color texture and attach to the framebuffer
 	unusedTexture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, unusedTexture);
 	gl.texImage2D(
@@ -133,38 +132,38 @@ function createTextureLight() {
 		0);
 }
 
-// OBJ 文件解析相关
+// OBJ file parsing
 
-// 存储WebGL顶点数据
+// Store WebGL vertex data
 var webglVertexData = [
-	[],   // 位置
-	[],   // 纹理坐标
-	[],   // 法线
+	[],   // Positions
+	[],   // Texture coordinates
+	[],   // Normals
 ];
 
-// 根据名称从要绘制的对象数组中获取指定的对象
+// Get a specific object from the array of objects to draw by name
 function getObjToDraw(objsToDraw, name){
 	return objsToDraw.find(x => x.name === name);
 }
 
-// 从URL加载OBJ文件
+// Load OBJ file from URL
 function loadObj(url) {
 	let xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if (xhttp.readyState == 4) {
-			parseOBJ(xhttp.responseText); // 当文件加载完成时，解析OBJ数据
+			parseOBJ(xhttp.responseText); // Parse OBJ data when file is loaded
 		}
 	};
 	xhttp.open("GET", url, false);
 	xhttp.send(null);
 }
 
-// 解析OBJ文件内容，将其转换为WebGL可用的顶点数据
+// Parse OBJ file content and convert it to WebGL vertex data
 function parseOBJ(text) {
 	webglVertexData = [
-		[],   // positions
-		[],   // texcoords
-		[],   // normals
+		[],   // Positions
+		[],   // Texture coordinates
+		[],   // Normals
 	];
 
 	const objPositions = [[0, 0, 0]];
@@ -177,7 +176,7 @@ function parseOBJ(text) {
 		objNormals,
 	];
 
-	// 添加顶点信息
+	// Add vertex information
 	function addVertex(vert) {
 		const ptn = vert.split('/');
 		ptn.forEach((objIndexStr, i) => {
@@ -192,43 +191,42 @@ function parseOBJ(text) {
 
 	const keywords = {
 		v(parts) {
-			objPositions.push(parts.map(parseFloat)); // 处理顶点位置
+			objPositions.push(parts.map(parseFloat)); // Process vertex positions
 		},
 		vn(parts) {
-			objNormals.push(parts.map(parseFloat)); // 处理法线
+			objNormals.push(parts.map(parseFloat)); // Process normals
 		},
 		vt(parts) {
-			objTexcoords.push(parts.map(parseFloat)); // 处理纹理坐标
+			objTexcoords.push(parts.map(parseFloat)); // Process texture coordinates
 		},
 		f(parts) {
 			const numTriangles = parts.length - 2;
 			for (let tri = 0; tri < numTriangles; ++tri) {
-				addVertex(parts[0]); // 处理第一个顶点
-				addVertex(parts[tri + 1]); // 处理第二个顶点
-				addVertex(parts[tri + 2]); // 处理第三个顶点
+				addVertex(parts[0]); // Process the first vertex
+				addVertex(parts[tri + 1]); // Process the second vertex
+				addVertex(parts[tri + 2]); // Process the third vertex
 			}
 		},
 	};
 
-	const keywordRE = /(\w*)(?: )*(.*)/; // 正则表达式，用于匹配关键字和参数
+	const keywordRE = /(\w*)(?: )*(.*)/; // Regular expression to match keywords and arguments
 	const lines = text.split('\n');
 	for (let lineNo = 0; lineNo < lines.length; ++lineNo) {
 		const line = lines[lineNo].trim();
 		if (line === '' || line.startsWith('#')) {
-			continue; // 跳过空行或注释行
+			continue; // Skip empty lines or comment lines
 		}
 		const m = keywordRE.exec(line);
 		if (!m) {
 			continue;
 		}
 		const [, keyword, unparsedArgs] = m;
-		const parts = line.split(/\s+/).slice(1); // 拆分参数
-		const handler = keywords[keyword]; // 获取处理函数
+		const parts = line.split(/\s+/).slice(1); // Split arguments
+		const handler = keywords[keyword]; // Get the handler function
 		if (!handler) {
 			continue;
 		}
 
-		handler(parts, unparsedArgs); // 调用处理函数处理当前行的参数
+		handler(parts, unparsedArgs); // Call the handler function to process the current line
 	}
-
 }

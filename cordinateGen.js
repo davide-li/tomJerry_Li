@@ -1,48 +1,48 @@
-// 生成一个随机值函数，用于生成随机的坐标
+// Function to generate a random value for coordinates
 function genValue() {
-    // 生成一个介于 -55 和 55 之间的随机整数（包括55）
+    // Generate a random integer between -55 and 55 (inclusive)
     return Math.floor(Math.random() * (55 - (-55) + 1)) + (-55);
 }
 
-// 初始化敌人位置的 x 和 z 坐标
+// Initialize enemy's x and z coordinates
 var xz = [
-    [genValue()],  // 随机生成 x 坐标
-    [genValue()]   // 随机生成 z 坐标
+    [genValue()],  // Randomly generate x coordinate
+    [genValue()]   // Randomly generate z coordinate
 ];
 
-// 初始化三个jerry的 x 和 z 坐标
+// Initialize the x and z coordinates for three jerrys
 var jerry1xz = [
-    genValue(),  // 随机生成jerry1的 x 坐标
-    genValue()   // 随机生成jerry1的 z 坐标
+    genValue(),  // Randomly generate jerry1's x coordinate
+    genValue()   // Randomly generate jerry1's z coordinate
 ];
 
 var jerry2xz = [
-    genValue(),  // 随机生成jerry2的 x 坐标
-    genValue()   // 随机生成jerry2的 z 坐标
+    genValue(),  // Randomly generate jerry2's x coordinate
+    genValue()   // Randomly generate jerry2's z coordinate
 ];
 
 var jerry3xz = [
-    genValue(),  // 随机生成jerry3的 x 坐标
-    genValue()   // 随机生成jerry3的 z 坐标
+    genValue(),  // Randomly generate jerry3's x coordinate
+    genValue()   // Randomly generate jerry3's z coordinate
 ];
 
-// 刷新所有jerry位置的函数
+// Function to refresh the positions of all jerrys
 function refreshJerrys(){
-    // 生成新的随机位置，重新设置jerry1的 x 和 z 坐标
+    // Generate new random positions and reset jerry1's x and z coordinates
     jerry1xz = [
-        genValue(),  // 随机生成jerry1的新 x 坐标
-        genValue()   // 随机生成jerry1的新 z 坐标
+        genValue(),  // Randomly generate new x coordinate for jerry1
+        genValue()   // Randomly generate new z coordinate for jerry1
     ];
 
-    // 生成新的随机位置，重新设置jerry2的 x 和 z 坐标
+    // Generate new random positions and reset jerry2's x and z coordinates
     jerry2xz = [
-        genValue(),  // 随机生成jerry2的新 x 坐标
-        genValue()   // 随机生成jerry2的新 z 坐标
+        genValue(),  // Randomly generate new x coordinate for jerry2
+        genValue()   // Randomly generate new z coordinate for jerry2
     ];
 
-    // 生成新的随机位置，重新设置jerry3的 x 和 z 坐标
+    // Generate new random positions and reset jerry3's x and z coordinates
     jerry3xz = [
-        genValue(),  // 随机生成jerry3的新 x 坐标
-        genValue()   // 随机生成jerry3的新 z 坐标
+        genValue(),  // Randomly generate new x coordinate for jerry3
+        genValue()   // Randomly generate new z coordinate for jerry3
     ];
 }
