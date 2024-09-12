@@ -4,7 +4,7 @@ function genValue() {
     return Math.floor(Math.random() * (55 - (-55) + 1)) + (-55);
 }
 
-// Initialize enemy's x and z coordinates
+// Initialize boss's x and z coordinates
 var xz = [
     [genValue()],  // Randomly generate x coordinate
     [genValue()]   // Randomly generate z coordinate

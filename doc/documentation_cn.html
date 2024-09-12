@@ -11,38 +11,102 @@
 <body class="stackedit">
 <div class="stackedit__html">
     <h1 id="descrizione-dellapplicazione-e-suo-utilizzo">应用程序描述及其使用</h1>
-    <p>Tom和Jerry是我们从小就喜欢的迪士尼动画片，而他们的关系也是亦敌亦友，相爱相杀。<br>
-        在这个游戏中，玩家模拟成为Tom猫，需要找到所有的场地上的老鼠，且必须躲避来自主人的追赶。<br>
-        如果主人抓到Tom猫的时候，而Tom猫没有抓住所有的老鼠，会被惩罚，游戏结束。</p>
-    <p>
-        游戏的目的是在有限的场地内，抓捕所有的老鼠，且及时躲避主人的追赶。 但要小心！ 如果你走出地图，你会被淘汰！
-    </p>
-    <h1 id="spiegazione-delle-scelte-effettuate-e-funzionalità-di-webgl-utilizzate">已做出的选择和使用的WebGL功能说明</h1>
-    <p>为了实现场景，使用了多种技术。</p>
+    <p>Tom和Jerry是我们从小就喜欢的迪士尼动画片，而他们的关系也是亦敌亦友，相爱相杀。
+        在这个游戏中，玩家模拟成为Tom猫，需要找到所有的场地上的老鼠，且必须躲避来自主人的追赶。如果主人抓到Tom猫的时候，
+        而Tom猫没有抓住所有的老鼠，会被惩罚，游戏结束。 同时，如果你走出地图，你一样会被淘汰！</p>
+    <h1 id="spiegazione-delle-scelte-effettuate-e-funzionalità-di-webgl-utilizzate">使用的WebGL功能说明</h1>
     <h2>3D对象</h2>
-    <p>通过应用纹理和透视视图实现了一个立方体的天空盒，目的是创造一个无限世界的感觉。</p>
-    <p>然后，通过创建一个应用了草地纹理的平面，试图呈现一个开放环境，使环境“生动”起来。</p>
-    <p>平面和地图的尺寸是一致的，事实上，离开平面相当于进入“游戏结束”屏幕，玩家可以通过“重试”按钮重新开始游戏。</p>
-    <p>场景由从Wavefront OBJ格式文件中导入的多个网格组成。</p>
-    <p>Tom猫和Jerry鼠的网格非常复杂（从<a href="https://sketchfab.com/">sketchfab.com</a>网站获取）。</p>
-    <p>为了将网格导入场景中，使用了<i>utils</i>文件中的<i>loadObj</i>函数。</p>
+    <p>通过应用纹理和透视视图实现了一个立方体的天空盒，目的是创造一个无限世界的感觉。ref: drawer.drawSkybox()。<br>
+        首先，我们使用 geometries.loadSkyBox() 来加载天空盒子的纹理，然后，在 drawer.drawSkybox() 中绘制出天空盒子。这里需要指出
+        的是我们在代码中仅设定了天空盒子的六个定点坐标，同时我们在绘制时，我们计算了视图矩阵以及对应的投影的矩阵的逆。最后我们将
+        最终的天空盒子的信息封装交给 webglUtil.drawBufferInfo 来帮助我们成功绘制天空盒子。</p>
+
+    <p>通过创建一个应用了草地纹理的地面，试图呈现一个开放环境，使环境“生动”起来。ref: drawer.drawFloor()。<br>
+        纹理部分我们使用的是 geometries.loadFloor()。<br>
+        loadFloor() 定义了地面的几何数据并加载草地纹理。我们在该方法中设置了地图的大小： const S = 80; const H = 0;<br>
+        drawFloor() 在渲染时绑定地面缓冲区、设置着色器变量，并将地面绘制到场景中。</p>
+
+    <p> 当 Tom 离开平面相当于进入“游戏结束”屏幕，玩家可以通过“开始”按钮重新开始游戏。<br>
+        这一点，我们在 drawer.drawScene() 中判定了 Tom 的位置，以及 Jerry 的数量。</p>
+
+    <p>场景由 OBJ格式文件中 导入的多个网格(Mesh)组成。Tom猫和Jerry鼠的网格非常复杂（从<a href="https://sketchfab.com/">sketchfab.com</a>网站获取）。</p>
+
+    <p>为了将网格导入场景中，我们使用了 loadObj() 函数。<br>
+        例如：function loadTom() { loadObj("resources/obj/Cat.obj") ... } <br>
+        function loadJerry() { loadObj("resources/obj/Jerry.obj") ... } <br>
+        loadObj 函数加载的内容包括：顶点、纹理坐标、法线、面。 将文件内容解析为 WebGL 中使用的数据结构。</p>
+
     <h2>纹理</h2>
-    <p>为场景中的每个对象都应用了纹理。</p>
-    <p>纹理的实现从课程中提供的示例代码开始。</p>
-    <p>纹理是通过WebGL提供的“gl.createTexture()”和“gl.texImage2D()”函数创建的，这些函数在可能的情况下对图像应用“mipmap”技术。 如果不可能，则设置默认参数来管理它。</p>
-    <p>最后，Tom猫的主人是通过将我的照片作为纹理应用到球体对象上来实现的。</p>
+
+    <p>我为所有的 OBJ 添加了纹理，其中包括天空盒子，地面，Jerry 鼠，Tom 猫，Boss 球体。</p>
+    <p>纹理是通过WebGL提供的“gl.createTexture()”和“gl.texImage2D()”函数创建的，这些函数对图像应用“mipmap”技术。 <br>
+        纹理（Texture）是一种用于增强3D物体表面外观的技术。它通过将图像或其他数据（通常是2D图像）映射到3D模型的表面上，从而为模型增加细节、颜色和视觉复杂度。<br>
+        WebGL 中的 createTexture() 函数 是 WebGL API 中用于创建一个新的纹理对象的函数。这个纹理对象是一个占位符，
+        用于存储即将加载到 GPU 的纹理数据。其基本作用是创建一个可以在后续步骤中绑定和操作的纹理。<br>
+        WebGL 中的 texImage2D() 函数是用于指定二维纹理图像的函数，它将一个图像或数据加载到当前绑定的纹理中。<br>
+        在我们的项目中由多处地方使用到这两个函数。<br>
+        WebGL 中的 generateMipmap()是一种图形渲染优化，用于在计算机图形学和游戏开发中增强纹理的渲染性能和视觉质量。<br>
+        它通过预先生成一系列分辨率递减的纹理图像层级，并在渲染时根据视图中物体的距离选择合适的分辨率来进行渲染。</p>
+    <p>最后，Tom猫的主人是通过将我的照片作为纹理应用到球体对象上来实现的。<br>
+    代码示例：
+        <pre><code class="language-js">
+        function loadSphere() {
+            loadObj("resources/obj/sphere.obj");
+            ......
+            texture_sphere = loadTextureFromImg("resources/obj/me.png");
+        }
+        </code></pre>   </p>
     <img src="boss.png" alt="BOSS">
+
     <h2>光照和阴影</h2>
     <p>我尝试通过在场景上方放置一个光源来尽可能地模拟自然光。 光是定向的，并利用了深度纹理，使用深度坐标计算哪些对象处于阴影中（以及在哪一侧）。</p>
-    <p>用户可以根据其轴修改光源的位置。</p>
-    <p>我设置了一个偏差来限制称为“阴影粉刺”的像素化阴影效果。</p>
-    <p>用户还可以选择不渲染阴影，以便在希望在性能较低的计算机上运行游戏时减轻工作负载。</p>
-    <p>通过这种技术照亮场景的一个问题是，阴影显得有些像素化（尽管偏差非常低）。<br>
+    <p>用户可以根据其轴修改光源的位置。我们定义了 LightX, LightY, LightZ 来确定光源的位置。<br>
+        在代码中我也增添了 shadowOptions (shadowOn / shanDowOff) 来测试阴影效果 <br>
+        我初始化了灯光的位置和阴影程度，代码示例如下：
+        <pre><code class="language-js">
+            // Light source position and related parameters
+            var x_light = 10,
+            y_light = 200,
+            z_light = 250,
+            ......
+            lightIntensity = 2.5, // Light source intensity
+            shadowIntensity = 0.9; // Shadow intensity
+         </code></pre>
+        同时，我还定义了更新灯光位置的函数，代码示例如下：
+        <pre><code class ='language-js'>
+            // Function to update light source position
+            function updateLightx(event, ui) {
+            x_light = ui.value; // Update x-axis position of the light source
+            }
+            function updateLighty(event, ui) {
+            y_light = ui.value; // Update y-axis position of the light source
+            }
+            function updateLightz(event, ui) {
+            z_light = ui.value; // Update z-axis position of the light source
+            }
+        </code></pre>
+        通过上述的方法，既保证了初始化界面时灯光的位置，以及随着物体移动，灯光位置更新的效果。
+    </p>
+    <p>我设置了一个偏差来限制称为“阴影粉刺”的像素化阴影效果。<br>
+        阴影粉刺 是由于精度限制和深度比较误差导致的伪影。通过在阴影贴图中添加深度偏差（Depth Bias），可以有效地减少这些伪影问题。<br>
+        在我的项目中，我初始化了 var bias = -0.00005; 并且在后面的加载Obj时，曾多次调用，代码示例如下：
+        <pre><code class ='language-js'>
+            webglUtils.setUniforms(programInfo, {
+            u_view: viewMatrix,
+            u_projection: projectionMatrix,
+            u_bias: bias,
+                ......
+            u_shadowIntensity: shadowIntensity, // Shadow intensity
+            });
+        </code></pre>
+        当从光源角度渲染场景并生成阴影贴图时，给存储的深度值加上一个小的偏移量。<br>
+        这样，当进行深度比较时，物体表面上的像素不会直接与精度有限的深度值重合，减少了由于浮点计算误差而导致的阴影粉刺。<br>
+        通过这种技术照亮场景的一个问题是，阴影显得有些像素化（尽管偏差非常低）。<br>
         这是因为对象的多边形数量较少，因此在启用阴影时显得更加不平滑。</p>
     <p>为了改善视觉效果，可以增加多边形的数量，或者（作为替代）可以实现一种有效的阴影算法，以细化阴影的形状。</p>
+
     <h2>移动和碰撞</h2>
-    <p>场景中Tom的移动是基于课程中看到的cg-car2.js文件。</p>
-    <p>用于移动的物理是汽车动画函数的简化版本，而无需管理车轮。</p>
+    <p>场景中Tom的移动是基于课程中看到的cg-car2.js文件。用于移动的物理是汽车动画函数的简化版本，而无需管理车轮。</p>
     <p>地图中的移动具有一些碰撞。</p>
     <p>通过使用被控制角色的位置，可以确定是否与追赶我们的BOSS发生了碰撞。</p>
     <p>玩家角色的位置还用于创建主人使用的追踪算法，主人通过控制Tom猫在x轴和z轴上的位置，更新其方向，并在每帧修改主人的位置。</p>
@@ -50,7 +114,6 @@
     <ul>
     </ul><ul>与主人的碰撞</ul>
     <ul>与Jerry鼠的碰撞</ul>
-
     <p>当主人抓住玩家时，游戏进入游戏结束状态，通过显示相应的屏幕，可以重新开始游戏。</p>
     <img src="youdie.png" alt="YOUDIE">
     <p>与Jerry的碰撞则导致它们消失。 一旦收集完所有Jerry，通过特定的控制，确定玩家获胜。 同样情况下，屏幕上会显示一个视图，告知玩家他的成功，并允许他重新开始。</p>
@@ -58,6 +121,7 @@
     <p>场景中的Jerry绕y轴和x轴旋转，使用了库“m4.js”中的函数：<br>
         “m4.yRotate(m, angleInRadians, dst)”<br>
         “m4.xRotate(m, angleInRadians, dst)”</p>
+
     <h2>与界面的交互</h2>
     <p>有两种类型的交互：</p>
     <ul>

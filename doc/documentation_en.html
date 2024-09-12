@@ -11,35 +11,104 @@
 <body class="stackedit">
 <div class="stackedit__html">
     <h1 id="descrizione-dellapplicazione-e-suo-utilizzo">Application Description and Usage</h1>
-    <p>Tom and Jerry is a Disney cartoon we have loved since childhood, and their relationship is both antagonistic and friendly, with love and rivalry intertwined.<br>
-        In this game, the player takes on the role of Tom the cat, who needs to find all the mice on the field while avoiding being chased by the owner.<br>
-        If the owner catches Tom and Tom hasn't caught all the mice, he will be punished, and the game will end.</p>
-    <p>
-        The objective of the game is to catch all the mice within a limited area while avoiding the owner's chase. But be careful! If you step out of the map, you'll be eliminated!
-    </p>
-    <h1 id="spiegazione-delle-scelte-effettuate-e-funzionalità-di-webgl-utilizzate">Explanation of Choices Made and WebGL Features Used</h1>
-    <p>Various techniques were used to create the scene.</p>
+    <p>Tom and Jerry are Disney cartoons we loved since childhood, and their relationship is both friend and foe, love and conflict.
+        In this game, the player simulates becoming Tom the cat, who needs to find all the mice on the map while avoiding being chased by the owner. If the owner catches Tom, and Tom has not captured all the mice, there will be a penalty, and the game will end.
+        Additionally, if you step out of the map, you will also be eliminated!</p>
+
+    <h1 id="spiegazione-delle-scelte-effettuate-e-funzionalità-di-webgl-utilizzate">Explanation of WebGL Functionality Used</h1>
+
     <h2>3D Objects</h2>
-    <p>A skybox was implemented using textures and perspective view to create the feeling of an infinite world.</p>
-    <p>Then, a plane with a grass texture was created to represent an open environment, making the setting more “alive.”</p>
-    <p>The size of the plane matches the size of the map. In fact, leaving the plane corresponds to entering the "Game Over" screen, and players can restart the game using the "Retry" button.</p>
-    <p>The scene consists of multiple meshes imported from Wavefront OBJ format files.</p>
-    <p>The meshes for Tom the cat and Jerry the mouse are quite complex (sourced from <a href="https://sketchfab.com/">sketchfab.com</a>).</p>
-    <p>To import the meshes into the scene, the <i>loadObj</i> function from the <i>utils</i> file was used.</p>
+    <p>We implemented a skybox using textures and perspective view to create the feeling of an infinite world. ref: <code>drawer.drawSkybox()</code>.<br>
+        First, we load the textures for the skybox using <code>geometries.loadSkyBox()</code>, and then, in <code>drawer.drawSkybox()</code>, we render the skybox.
+        It’s important to note that we only set the six vertex coordinates for the skybox in the code. When drawing, we calculate the inverse of the view matrix and the corresponding projection matrix. Finally, we pass the skybox information to <code>webglUtil.drawBufferInfo</code>, which helps us successfully render the skybox.</p>
+
+    <p>We created a ground with grass textures to simulate an open environment, making the environment feel more “alive.” ref: <code>drawer.drawFloor()</code>.<br>
+        The texture part uses <code>geometries.loadFloor()</code>.<br>
+        <code>loadFloor()</code> defines the geometry data for the ground and loads the grass texture. In this method, we set the map size: <code>const S = 80;</code> <code>const H = 0;</code>.<br>
+        <code>drawFloor()</code> binds the ground buffer during rendering, sets shader variables, and renders the ground in the scene.</p>
+
+    <p>When Tom leaves the plane, the game transitions to a “game over” screen, where the player can restart the game by clicking the "start" button.<br>
+        We handle this in <code>drawer.drawScene()</code> by checking Tom’s position and the number of Jerry mice.</p>
+
+    <p>The scene consists of multiple meshes imported from OBJ format files. The meshes for Tom the cat and Jerry the mouse are quite complex (sourced from <a href="https://sketchfab.com/">sketchfab.com</a>).</p>
+
+    <p>To import these meshes into the scene, we use the <code>loadObj()</code> function.<br>
+        For example: <code>function loadTom() { loadObj("resources/obj/Cat.obj") ... }</code> <br>
+        <code>function loadJerry() { loadObj("resources/obj/Jerry.obj") ... }</code> <br>
+        The <code>loadObj</code> function loads the content, including vertices, texture coordinates, normals, and faces, parsing the file into a data structure used by WebGL.</p>
+
     <h2>Textures</h2>
-    <p>Textures were applied to every object in the scene.</p>
-    <p>The texture implementation started from example code provided during the course.</p>
-    <p>Textures are created using WebGL functions “gl.createTexture()” and “gl.texImage2D()”, which apply the “mipmap” technique to images when possible. If not possible, default parameters are set to handle them.</p>
-    <p>Finally, Tom's owner was created by applying my photo as a texture to a sphere object.</p>
-    <img src="boss.png">
+
+    <p>I added textures to all OBJ models, including the skybox, the ground, Jerry the mouse, Tom the cat, and the Boss sphere.</p>
+
+    <p>Textures are created using WebGL’s <code>gl.createTexture()</code> and <code>gl.texImage2D()</code> functions, which apply the mipmap technique to images. <br>
+        Texture is a technique used to enhance the appearance of 3D objects’ surfaces by mapping an image or other data (usually a 2D image) onto the surface of a 3D model, adding details, colors, and visual complexity to the model.<br>
+        In WebGL, the <code>createTexture()</code> function is used to create a new texture object. This texture object is a placeholder for storing texture data that will be loaded onto the GPU. Its primary purpose is to create an object that can be bound and manipulated in subsequent steps.<br>
+        The <code>texImage2D()</code> function in WebGL is used to specify the 2D texture image, loading an image or data into the currently bound texture.<br>
+        In our project, these two functions are used in various places.<br>
+        The <code>generateMipmap()</code> function in WebGL is a rendering optimization technique used to improve texture rendering performance and visual quality in computer graphics and game development.<br>
+        It works by pre-generating a series of progressively smaller resolution texture image levels and selecting the appropriate resolution during rendering based on the distance of the object from the viewer.</p>
+
+    <p>Finally, the owner of Tom the cat is rendered by applying a texture of my photo onto a sphere object.<br>
+        Code example:
+    <pre><code class="language-js">
+    function loadSphere() {
+        loadObj("resources/obj/sphere.obj");
+        ......
+        texture_sphere = loadTextureFromImg("resources/obj/me.png");
+    }
+    </code></pre>
+    </p>
+    <img src="boss.png" alt="BOSS">
+
     <h2>Lighting and Shadows</h2>
-    <p>I attempted to simulate natural light as much as possible by placing a light source above the scene. The light is directional, utilizing depth textures to calculate which objects are in shadow (and on which side).</p>
-    <p>The user can modify the light source's position along its axes.</p>
-    <p>I set a bias to limit pixelated shadow effects known as “shadow acne.”</p>
-    <p>Users can also choose not to render shadows to reduce the workload when running the game on less powerful computers.</p>
-    <p>One issue with lighting the scene using this technique is that the shadows appear somewhat pixelated (despite the low bias).<br>
-        This is because the objects have a low polygon count, making them appear less smooth when shadows are enabled.</p>
-    <p>To improve the visual effect, increasing the polygon count is one solution, or alternatively, implementing an efficient shadow algorithm to refine the shadow shapes.</p>
+    <p>I attempted to simulate natural light by placing a light source above the scene. The light is directional and uses depth textures to calculate which objects are in shadow (and on which side).</p>
+    <p>The user can modify the position of the light source along its axes. We defined LightX, LightY, and LightZ to determine the position of the light source.<br>
+        Additionally, I added <code>shadowOptions</code> (shadowOn / shadowOff) to test the shadow effects.<br>
+        I initialized the light position and shadow intensity, and the code example is as follows:
+    <pre><code class="language-js">
+        // Light source position and related parameters
+        var x_light = 10,
+        y_light = 200,
+        z_light = 250,
+        ......
+        lightIntensity = 2.5, // Light source intensity
+        shadowIntensity = 0.9; // Shadow intensity
+    </code></pre>
+    Additionally, I defined functions to update the light's position, with the code as follows:
+    <pre><code class ='language-js'>
+        // Function to update light source position
+        function updateLightx(event, ui) {
+            x_light = ui.value; // Update x-axis position of the light source
+        }
+        function updateLighty(event, ui) {
+            y_light = ui.value; // Update y-axis position of the light source
+        }
+        function updateLightz(event, ui) {
+            z_light = ui.value; // Update z-axis position of the light source
+        }
+    </code></pre>
+    Through these methods, the light's position is initialized, and the position updates as objects move in the scene.
+    </p>
+    <p>I set a bias to reduce the pixelated shadow effect known as "shadow acne."<br>
+        Shadow acne occurs due to precision limitations and depth comparison errors, which result in rendering artifacts. By adding a depth bias in the shadow map, these artifacts can be reduced.<br>
+        In my project, I initialized <code>var bias = -0.00005;</code> and called it multiple times while loading objects. Here's an example:
+    <pre><code class ='language-js'>
+        webglUtils.setUniforms(programInfo, {
+            u_view: viewMatrix,
+            u_projection: projectionMatrix,
+            u_bias: bias,
+            ......
+            u_shadowIntensity: shadowIntensity, // Shadow intensity
+        });
+    </code></pre>
+    When rendering the scene from the light's perspective and generating the shadow map, a small offset is added to the stored depth values.<br>
+    This prevents surface pixels from directly overlapping with depth values that have limited precision, reducing shadow acne caused by floating-point calculation errors.<br>
+    A challenge with illuminating the scene using this technique is that the shadows appear somewhat pixelated (despite the low bias).<br>
+    This is because the object has a low polygon count, making the shadows appear less smooth when enabled.
+    </p>
+    <p>To improve the visual quality, you can increase the polygon count, or alternatively, implement a more effective shadow algorithm to refine the shape of the shadows.</p>
+
     <h2>Movement and Collisions</h2>
     <p>The movement of the tom in the scene is based on the cg-car2.js file observed during the course.</p>
     <p>The physics used for movement is a simplified version of the car animation functions, without the need to manage wheels.</p>
